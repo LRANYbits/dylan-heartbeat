@@ -3,7 +3,7 @@
 **一个基于 Kelivo 的 AI Agent 运行时。**  
 它不是“聊天接口转发器”，而是一个让 AI 真正**长期居住**的数字环境。
 
-> 官方使用方式是先 [Fork 本项目](https://github.com/callie0313/dylan-heartbeat/fork)，再 clone 你自己的 fork 进行配置和部署。
+> 使用方式是先 [Fork 本项目](https://github.com/callie0313/dylan-heartbeat/fork)，再 clone 你自己的 fork 进行配置和部署。
 >
 > Dylan Heartbeat 会写入 `.env`、时间线、预设和个性化提示词；Fork 后使用能保留你的个人改动，也方便后续同步上游更新。直接 clone 原仓库也许能跑，但后续改配置、同步更新和部署都会更麻烦，本文档不再提供直接 clone 原仓库的流程。
 
