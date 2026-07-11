@@ -1,0 +1,28 @@
+name: Dylan Heartbeat
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Heartbeat
+        uses: ./.github/actions/heartbeat
+        with:
+          target_api_url: ${{ vars.TARGET_API_URL }}
+          target_api_key: ${{ secrets.TARGET_API_KEY }}
+          model_name: ${{ vars.MODEL_NAME }}
+          bark_key: ${{ secrets.BARK_KEY }}
+          push_provider: ${{ vars.PUSH_PROVIDER }}
+          day_wake_after_minutes: ${{ vars.DAY_WAKE_AFTER_MINUTES }}
+          night_wake_after_minutes: ${{ vars.NIGHT_WAKE_AFTER_MINUTES }}
+          day_check_interval_minutes: ${{ vars.DAY_CHECK_INTERVAL_MINUTES }}
+          night_check_interval_minutes: ${{ vars.NIGHT_CHECK_INTERVAL_MINUTES }}
+          wake_day_start_hour: ${{ vars.WAKE_DAY_START_HOUR }}
+          wake_day_end_hour: ${{ vars.WAKE_DAY_END_HOUR }}
+          time_zone: ${{ vars.TIME_ZONE }}
