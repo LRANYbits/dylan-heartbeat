@@ -1,0 +1,12 @@
+[
+  {
+    "role": "user",
+    "content": "2026-07-12 03:00 hey",
+    "position": 1
+  },
+  {
+    "role": "assistant",
+    "content": "晚安宝贝，做好梦。",
+    "position": 1.5
+  }
+]
