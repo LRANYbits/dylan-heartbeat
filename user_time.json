@@ -1,6 +1,6 @@
-[
+{
   "timezone": "Europe/London",
   "last_active": "2026-07-12T01:00:00Z",
   "wake_day_start": 10,
   "wake_day_end": 24
-]
+}
