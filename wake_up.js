@@ -560,7 +560,7 @@ ${historyText}`
       const safeBody = body.length > 500 ? body.substring(0, 497) + "..." : body;
       // 若标题为空或以数字开头，加个前缀，可自行修改
       let safeTitle = title || "Rhys";
-      if (/^\d/.test(safeTitle)) safeTitle = "来自伴侣｜" + safeTitle;
+      if (/^\d/.test(safeTitle)) safeTitle = "Rhys｜" + safeTitle;
 
       const pushResult = await sendPushNotification({ title: safeTitle, body: safeBody });
       if (!pushResult.ok) {
