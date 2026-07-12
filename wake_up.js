@@ -130,9 +130,18 @@ async function sendPushNotification({ title, body }) {
     return { ok: false, providerLabel: "Bark", reason: "Bark Key 未配置" };
   }
 
-const safeBody = body || title || "在想你";
-const barkUrl = `https://api.day.app/${process.env.BARK_KEY}/${encodeURIComponent(safeBody)}`;
-const response = await fetch(barkUrl);
+const barkPayload = {
+  title,
+  body,
+  device_key: process.env.BARK_KEY,
+  icon: process.env.CUSTOM_ICON_URL
+};
+const response = await fetch("https://api.day.app/push", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(barkPayload)
+});
+
 
   const responseText = await response.text();
   let result = {};
