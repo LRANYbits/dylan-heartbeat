@@ -498,8 +498,18 @@ app.post("/v1/chat/completions", async (req, reply) => {
     }
     if (tsDBDirty) saveTimestampDB(tsDB);
 
-    const finalTimeline = buildTimeline(kelivoMessages, tsDB);
-    saveTimeline(finalTimeline);
+    const now = new Date();
+const pad = n => String(n).padStart(2, "0");
+const formattedTime = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+const kelivoMessagesForTimeline = kelivoMessages.map(msg => {
+  if (msg.role !== "user") return msg;
+  const text = normalizeContentToText(msg.content);
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(text)) return msg;
+  return { ...msg, content: `${formattedTime} ${text}` };
+});
+const finalTimeline = buildTimeline(kelivoMessagesForTimeline, tsDB);
+saveTimeline(finalTimeline);
+
 
     // Kelivo 发图时 content 常是数组。默认转为文本占位，避免非视觉模型/中转站报错。
     // 如上游支持 OpenAI 兼容视觉格式，可设置 MULTIMODAL_MODE=passthrough 原样转发。
