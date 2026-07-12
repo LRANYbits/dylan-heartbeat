@@ -11,18 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run Heartbeat
-        uses: ./.github/actions/heartbeat
-        with:
-          target_api_url: ${{ vars.TARGET_API_URL }}
-          target_api_key: ${{ secrets.TARGET_API_KEY }}
-          model_name: ${{ vars.MODEL_NAME }}
-          bark_key: ${{ secrets.BARK_KEY }}
-          push_provider: ${{ vars.PUSH_PROVIDER }}
-          day_wake_after_minutes: ${{ vars.DAY_WAKE_AFTER_MINUTES }}
-          night_wake_after_minutes: ${{ vars.NIGHT_WAKE_AFTER_MINUTES }}
-          day_check_interval_minutes: ${{ vars.DAY_CHECK_INTERVAL_MINUTES }}
-          night_check_interval_minutes: ${{ vars.NIGHT_CHECK_INTERVAL_MINUTES }}
-          wake_day_start_hour: ${{ vars.WAKE_DAY_START_HOUR }}
-          wake_day_end_hour: ${{ vars.WAKE_DAY_END_HOUR }}
-          time_zone: ${{ vars.TIME_ZONE }}
+      - name: Run Dylan Heartbeat
+        run: node wake_up.js
+        env:
+          TARGET_API_URL: ${{ vars.TARGET_API_URL }}
+          TARGET_API_KEY: ${{ secrets.TARGET_API_KEY }}
+          MODEL_NAME: ${{ vars.MODEL_NAME }}
+          BARK_KEY: ${{ secrets.BARK_KEY }}
+          PUSH_PROVIDER: ${{ vars.PUSH_PROVIDER }}
+          DAY_WAKE_AFTER_MINUTES: ${{ vars.DAY_WAKE_AFTER_MINUTES }}
+          NIGHT_WAKE_AFTER_MINUTES: ${{ vars.NIGHT_WAKE_AFTER_MINUTES }}
+          DAY_CHECK_INTERVAL_MINUTES: ${{ vars.DAY_CHECK_INTERVAL_MINUTES }}
+          NIGHT_CHECK_INTERVAL_MINUTES: ${{ vars.NIGHT_CHECK_INTERVAL_MINUTES }}
+          WAKE_DAY_START_HOUR: ${{ vars.WAKE_DAY_START_HOUR }}
+          WAKE_DAY_END_HOUR: ${{ vars.WAKE_DAY_END_HOUR }}
+          TIME_ZONE: ${{ vars.TIME_ZONE }}
