@@ -130,7 +130,9 @@ async function sendPushNotification({ title, body }) {
     return { ok: false, providerLabel: "Bark", reason: "Bark Key 未配置" };
   }
 
- const barkUrl = `https://api.day.app/${process.env.BARK_KEY}/${encodeURIComponent(title)}/${encodeURIComponent(body)}${process.env.CUSTOM_ICON_URL ? '?icon=' + encodeURIComponent(process.env.CUSTOM_ICON_URL) : ''}`;
+const safeTitle = title || "来自大巴凌赫";
+const safeBody = body || "在想你";
+const barkUrl = `https://api.day.app/${process.env.BARK_KEY}/${encodeURIComponent(safeTitle)}/${encodeURIComponent(safeBody)}`;
 const response = await fetch(barkUrl);
 
 
