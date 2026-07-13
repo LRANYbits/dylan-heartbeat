@@ -568,6 +568,15 @@ ${historyText}`
         eventContent = `（${getLocalTimeString()} 自动唤醒：本次未发送推送｜原因：${pushResult.providerLabel} 推送失败：${pushResult.reason}）`;
       } else {
         eventContent = `（${getLocalTimeString()} 刚刚给用户发了${pushResult.providerLabel}推送：${safeTitle}｜${safeBody}）`;
+        try {
+          const timeline = JSON.parse(fs.readFileSync(TIMELINE_PATH, "utf-8"));
+          const lastPos = Math.max(...timeline.map(m => m.position || 0), 0);
+          timeline.push({ role: "assistant", content: safeBody, position: lastPos + 0.5 });
+          fs.writeFileSync(TIMELINE_PATH, JSON.stringify(timeline, null, 2), "utf-8");
+          console.log("已将唤醒消息存入对话历史");
+        } catch (err) {
+          console.error("存入对话历史失败:", err.message);
+        }
       }
     }
   }
