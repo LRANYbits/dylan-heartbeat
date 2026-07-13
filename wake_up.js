@@ -578,8 +578,9 @@ ${historyText}`
     console.log('已将唤醒消息存入对话历史');
   } catch (err) {
     console.error('存入对话历史失败:', err.message);
+      }
+    }
   }
-}
 
 
   try {
