@@ -1535,6 +1535,40 @@ app.get("/test-bark", async (req, reply) => {
   appendSpecialEvent(`（${formattedTime} 刚刚给用户发了 Bark：这是一条测试推送。）`);
   reply.send({ success: true });
 });
+// ========================
+// Lovense 回调 & 状态
+// ========================
+const LOVENSE_STATE_FILE = "./lovense_state.json";
+
+function loadLovenseState() {
+  if (!fs.existsSync(LOVENSE_STATE_FILE)) return null;
+  try { return fs.readJsonSync(LOVENSE_STATE_FILE); } catch { return null; }
+}
+
+function saveLovenseState(state) {
+  fs.writeJsonSync(LOVENSE_STATE_FILE, state, { spaces: 2 });
+}
+
+app.post("/lovense-callback", async (req, reply) => {
+  try {
+    console.log("Lovense callback:", JSON.stringify(req.body));
+    saveLovenseState({
+      uid: req.body.uid,
+      token: req.body.token,
+      toys: req.body.targetToyList || [],
+      receivedAt: new Date().toISOString()
+    });
+    return reply.send({ result: "success", code: 0 });
+  } catch (err) {
+    console.error("Lovense callback error:", err);
+    return reply.code(500).send({ result: "error" });
+  }
+});
+
+app.get("/lovense-status", async (req, reply) => {
+  const state = loadLovenseState();
+  return reply.send({ connected: !!state, state });
+});
 
 // ========================
 // 启动服务
