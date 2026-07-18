@@ -1571,7 +1571,7 @@ app.get("/lovense-status", async (req, reply) => {
 });
 app.get("/admin/lovense-getqr", async (req, reply) => {
   const token = process.env.LOVENSE_TOKEN;
-  const resp = await fetch("https://api.lovense-platform.com/api/lan/getQrCode", {
+  const resp = await fetch("https://api.lovense.com/api/lan/getQrCode", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
