@@ -655,12 +655,37 @@ saveTimeline(finalTimeline);
     });
 
     const reader = response.body.getReader();
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      reply.raw.write(value);
-    }
-    reply.raw.end();
+let fullStreamContent = '';
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  fullStreamContent += Buffer.from(value).toString();
+  reply.raw.write(value);
+}
+reply.raw.end();
+
+const toyMatch = fullStreamContent.match(/\[TOY:(\d+):(\d+)\]/);
+if (toyMatch) {
+  const intensity = Math.min(parseInt(toyMatch[1]), 20);
+  const duration = Math.min(parseInt(toyMatch[2]), 30);
+  console.log(`[TOY] Vibrate:${intensity} ${duration}秒`);
+  fetch("https://api.lovense.com/api/lan/v2/command", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      token: process.env.LOVENSE_TOKEN,
+      uid: "lori",
+      command: "Function",
+      action: `Vibrate:${intensity}`,
+      timeSec: duration,
+      loopRunningSec: 0,
+      loopPauseSec: 0,
+      stopPrevious: 1,
+      apiVer: 1
+    })
+  }).catch(err => console.error("[TOY] error:", err.message));
+}
+
   } catch (err) {
     console.error(err);
     reply.code(500).send({ error: err.message });
