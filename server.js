@@ -1569,6 +1569,23 @@ app.get("/lovense-status", async (req, reply) => {
   const state = loadLovenseState();
   return reply.send({ connected: !!state, state });
 });
+app.get("/lovense-getqr", async (req, reply) => {
+  const token = process.env.LOVENSE_TOKEN;
+  const resp = await fetch("https://api.lovense-platform.com/api/lan/getQrCode", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      token,
+      uid: "lori",
+      uname: "Lori",
+      utoken: "lori_dolce",
+      v: 2,
+      callbackUrl: "https://dylan-heartbeat-production-ba64.up.railway.app/lovense-callback"
+    })
+  });
+  const data = await resp.json();
+  return reply.send(data);
+});
 
 // ========================
 // 启动服务
