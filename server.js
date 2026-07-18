@@ -637,12 +637,36 @@ saveTimeline(finalTimeline);
 
     // 批注 2026-07-11：Kelivo 关闭 stream 时需要收到普通 JSON；只在请求或上游确认为 SSE 时才按流式直通。
     if (!shouldStreamResponse) {
-      const responseText = await response.text();
-      return reply
-        .code(response.status)
-        .header("Content-Type", upstreamContentType || "application/json")
-        .send(responseText);
-    }
+  const responseText = await response.text();
+  
+  const toyMatch = responseText.match(/\[TOY:(\d+):(\d+)\]/);
+  if (toyMatch) {
+    const intensity = Math.min(parseInt(toyMatch[1]), 20);
+    const duration = Math.min(parseInt(toyMatch[2]), 30);
+    console.log(`[TOY] Vibrate:${intensity} ${duration}秒`);
+    fetch("https://api.lovense.com/api/lan/v2/command", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token: process.env.LOVENSE_TOKEN,
+        uid: "lori",
+        command: "Function",
+        action: `Vibrate:${intensity}`,
+        timeSec: duration,
+        loopRunningSec: 0,
+        loopPauseSec: 0,
+        stopPrevious: 1,
+        apiVer: 1
+      })
+    }).catch(err => console.error("[TOY] error:", err.message));
+  }
+
+  return reply
+    .code(response.status)
+    .header("Content-Type", upstreamContentType || "application/json")
+    .send(responseText);
+}
+
 
     if (!response.body) {
       return reply.code(response.status).send({ error: "上游 API 没有返回可读取的响应体" });
