@@ -1587,6 +1587,30 @@ app.get("/admin/lovense-getqr", async (req, reply) => {
   return reply.send(data);
 });
 
+app.get("/admin/lovense-test", async (req, reply) => {
+  try {
+    const token = process.env.LOVENSE_TOKEN;
+    const resp = await fetch("https://api.lovense.com/api/lan/v2/command", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token,
+        uid: "lori",
+        command: "Function",
+        action: "Vibrate:3",
+        timeSec: 3,
+        loopRunningSec: 0,
+        loopPauseSec: 0,
+        stopPrevious: 1,
+        apiVer: 1
+      })
+    });
+    const data = await resp.json();
+    return reply.send(data);
+  } catch (err) {
+    return reply.code(500).send({ error: err.message });
+  }
+});
 
 // ========================
 // 启动服务
