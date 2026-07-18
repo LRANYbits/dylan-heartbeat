@@ -1569,7 +1569,7 @@ app.get("/lovense-status", async (req, reply) => {
   const state = loadLovenseState();
   return reply.send({ connected: !!state, state });
 });
-app.get("/lovense-getqr", async (req, reply) => {
+app.get("/admin/lovense-getqr", async (req, reply) => {
   const token = process.env.LOVENSE_TOKEN;
   const resp = await fetch("https://api.lovense-platform.com/api/lan/getQrCode", {
     method: "POST",
