@@ -451,7 +451,8 @@ function readRestartCommand() {
 // 安全：放行 /admin，其他仅本地/局域网
 // ========================
 app.addHook("onRequest", (req, reply, done) => {
-  if (req.url.startsWith("/admin")) return done();
+  if (req.url.startsWith("/admin") || req.url.startsWith("/lovense-callback")) return done();
+
   // 批注 2026-07-11：本地部署默认只允许局域网；Railway/Render 等云端部署需显式打开公网 /v1 API，内部接口仍不外放。
   if (readBooleanEnv("ALLOW_PUBLIC_API", false) && req.url.startsWith("/v1/")) return done();
   const ip = req.ip || req.connection.remoteAddress;
