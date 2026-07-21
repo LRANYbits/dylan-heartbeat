@@ -411,6 +411,12 @@ async function runWakeUp() {
   const weatherContext = await fetchWeatherContext();
   const wakePrompt = buildWakePrompt(getChinaTimeString(), diffMinutes, weatherContext);
   const cleanMessages = stripPosition(messages);
+// 提取最近5条AI推送，防止重复
+const recentPushes = cleanMessages
+  .filter(m => m.role === "assistant")
+  .slice(-5)
+  .map(m => `• ${normalizeContentToText(m.content)}`)
+  .join("\n");
 
   const historyText = cleanMessages
     .filter(msg => msg.role !== "system")
@@ -435,12 +441,20 @@ async function runWakeUp() {
     ? normalizeContentToText(baseSystemPrompt.content).split("## Memories")[0].trim()
     : "";
 
-  const wakeMessages = [
-    { role: "system", content: wakePrompt },
-    { role: "system", content: cleanSP },
-    {
-      role: "system",
-      content: `以下是你与用户最近的聊天记录，仅供回忆和参考。
+ const wakeMessages = [
+  { role: "system", content: wakePrompt },
+  { role: "system", content: cleanSP },
+  // ↓ 新增这段 ↓
+  ...(recentPushes ? [{
+    role: "system",
+    content: `【严禁重复】你最近已发过这些推送，绝对不能重复相同主题或措辞：\n${recentPushes}\n请选择完全不同的话题或情绪角度。`
+  }] : []),
+  // ↑ 新增结束 ↑
+  {
+    role: "system",
+    content: `以下是你与用户最近的聊天记录...`
+  }
+];
 
 这些内容不是正在发生的实时对话。
 用户并没有给你发消息。
