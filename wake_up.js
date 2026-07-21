@@ -444,15 +444,11 @@ const recentPushes = cleanMessages
  const wakeMessages = [
   { role: "system", content: wakePrompt },
   { role: "system", content: cleanSP },
-   
-  ...(recentPushes ? [{
-    role: "system",
-    content: `【严禁重复】你最近已发过这些推送，绝对不能重复相同主题或措辞：\n${recentPushes}\n请选择完全不同的话题或情绪角度。`
-  }] : []),
-
+  { role: "system", content: "【严禁重复】最近已发推送：\n" + (recentPushes || "（无）") + "\n请换完全不同话题，不能重复上面内容。" },
   {
     role: "system",
-    content: `以下是你与用户最近的聊天记录...`
+    content: `以下是你与用户最近的聊天记录...
+
   }
 ];
 
