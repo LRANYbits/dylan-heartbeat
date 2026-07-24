@@ -1643,7 +1643,34 @@ app.get("/admin/lovense-getqr", async (req, reply) => {
     })
   });
   const data = await resp.json();
-  return reply.send(data);
+
+  if (req.query.format === "json") {
+    return reply.send(data);
+  }
+
+  // Lovense 返回的二维码图片字段在不同版本里出现过不同的 key，逐个试
+  const qrUrl =
+    data?.data?.qr || data?.data?.qrcode || data?.data?.qrCode ||
+    data?.qr || data?.qrcode || data?.result?.qr || null;
+
+  reply.type("text/html").send(`<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lovense 重新配对</title>
+<style>
+  body { font-family: -apple-system, sans-serif; background:#111; color:#eee; text-align:center; padding:24px; }
+  img { max-width:280px; width:90%; background:#fff; padding:16px; border-radius:12px; margin-top:16px; }
+  p { color:#aaa; font-size:14px; }
+  pre { text-align:left; white-space:pre-wrap; word-break:break-all; background:#1c1c1c; padding:12px; border-radius:8px; font-size:12px; color:#888; }
+</style></head>
+<body>
+<h2>用 Lovense Remote App 扫码配对</h2>
+${qrUrl
+  ? `<img src="${escapeHtml(qrUrl)}" alt="Lovense QR">`
+  : `<p>没找到二维码图片字段，看下面原始返回数据：</p>`}
+<p>打开手机上的 Lovense Remote app → 扫这个码 → 重新连接玩具</p>
+<pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre>
+</body></html>`);
 });
 
 app.get("/admin/lovense-test", async (req, reply) => {
