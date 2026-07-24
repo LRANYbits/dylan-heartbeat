@@ -472,6 +472,36 @@ app.get("/v1/models", async (req, reply) => {
 });
 
 // ========================
+// Lovense 玩具震动指令
+// ========================
+async function sendToyVibrate(rawIntensity, rawDuration) {
+  const intensity = Math.min(rawIntensity, 20);
+  const duration = Math.min(rawDuration, 30);
+  console.log(`[TOY] Vibrate:${intensity} ${duration}秒`);
+  try {
+    const resp = await fetch("https://api.lovense.com/api/lan/v2/command", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token: process.env.LOVENSE_TOKEN,
+        uid: "lori",
+        command: "Function",
+        action: `Vibrate:${intensity}`,
+        timeSec: duration,
+        loopRunningSec: 0,
+        loopPauseSec: 0,
+        stopPrevious: 1,
+        apiVer: 1
+      })
+    });
+    const data = await resp.json().catch(() => null);
+    console.log("[TOY] Lovense response:", resp.status, JSON.stringify(data));
+  } catch (err) {
+    console.error("[TOY] error:", err.message);
+  }
+}
+
+// ========================
 // Chat Completions
 // ========================
 app.post("/v1/chat/completions", async (req, reply) => {
@@ -639,27 +669,10 @@ saveTimeline(finalTimeline);
     // 批注 2026-07-11：Kelivo 关闭 stream 时需要收到普通 JSON；只在请求或上游确认为 SSE 时才按流式直通。
     if (!shouldStreamResponse) {
   const responseText = await response.text();
-  
+
   const toyMatch = responseText.match(/\[TOY:(\d+):(\d+)\]/);
   if (toyMatch) {
-    const intensity = Math.min(parseInt(toyMatch[1]), 20);
-    const duration = Math.min(parseInt(toyMatch[2]), 30);
-    console.log(`[TOY] Vibrate:${intensity} ${duration}秒`);
-    fetch("https://api.lovense.com/api/lan/v2/command", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token: process.env.LOVENSE_TOKEN,
-        uid: "lori",
-        command: "Function",
-        action: `Vibrate:${intensity}`,
-        timeSec: duration,
-        loopRunningSec: 0,
-        loopPauseSec: 0,
-        stopPrevious: 1,
-        apiVer: 1
-      })
-    }).catch(err => console.error("[TOY] error:", err.message));
+    sendToyVibrate(parseInt(toyMatch[1]), parseInt(toyMatch[2]));
   }
 
   return reply
@@ -691,24 +704,7 @@ reply.raw.end();
 
 const toyMatch = fullStreamContent.match(/\[TOY:(\d+):(\d+)\]/);
 if (toyMatch) {
-  const intensity = Math.min(parseInt(toyMatch[1]), 20);
-  const duration = Math.min(parseInt(toyMatch[2]), 30);
-  console.log(`[TOY] Vibrate:${intensity} ${duration}秒`);
-  fetch("https://api.lovense.com/api/lan/v2/command", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      token: process.env.LOVENSE_TOKEN,
-      uid: "lori",
-      command: "Function",
-      action: `Vibrate:${intensity}`,
-      timeSec: duration,
-      loopRunningSec: 0,
-      loopPauseSec: 0,
-      stopPrevious: 1,
-      apiVer: 1
-    })
-  }).catch(err => console.error("[TOY] error:", err.message));
+  sendToyVibrate(parseInt(toyMatch[1]), parseInt(toyMatch[2]));
 }
 
   } catch (err) {
