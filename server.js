@@ -1604,8 +1604,8 @@ app.post("/lovense-callback", async (req, reply) => {
     console.log("Lovense callback:", JSON.stringify(req.body));
     saveLovenseState({
       uid: req.body.uid,
-      token: req.body.token,
-      toys: req.body.targetToyList || [],
+      utoken: req.body.utoken,
+      toys: req.body.toys || {},
       receivedAt: new Date().toISOString()
     });
     return reply.send({ result: "success", code: 0 });
@@ -1615,9 +1615,18 @@ app.post("/lovense-callback", async (req, reply) => {
   }
 });
 
+// Lovense 每 ~5 分钟推一次心跳回调；超过这个窗口没收到新回调，就认为玩具已离线
+const LOVENSE_STALE_MS = 10 * 60 * 1000;
+
 app.get("/lovense-status", async (req, reply) => {
   const state = loadLovenseState();
-  return reply.send({ connected: !!state, state });
+  if (!state) return reply.send({ connected: false, state: null });
+
+  const isFresh = Date.now() - new Date(state.receivedAt).getTime() < LOVENSE_STALE_MS;
+  const toys = Object.values(state.toys || {});
+  const anyToyOnline = toys.some(t => t.status === 1);
+
+  return reply.send({ connected: isFresh && anyToyOnline, state });
 });
 app.get("/admin/lovense-getqr", async (req, reply) => {
   const token = process.env.LOVENSE_TOKEN;
