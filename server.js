@@ -670,7 +670,7 @@ saveTimeline(finalTimeline);
     if (!shouldStreamResponse) {
   const responseText = await response.text();
 
-  const toyMatch = responseText.match(/\[TOY:(\d+):(\d+)\]/);
+  const toyMatch = responseText.match(/\[TOY:\s*(\d+)\s*:\s*(\d+)\s*\]/);
   if (toyMatch) {
     sendToyVibrate(parseInt(toyMatch[1]), parseInt(toyMatch[2]));
   }
@@ -702,7 +702,7 @@ while (true) {
 }
 reply.raw.end();
 
-const toyMatch = fullStreamContent.match(/\[TOY:(\d+):(\d+)\]/);
+const toyMatch = fullStreamContent.match(/\[TOY:\s*(\d+)\s*:\s*(\d+)\s*\]/);
 if (toyMatch) {
   sendToyVibrate(parseInt(toyMatch[1]), parseInt(toyMatch[2]));
 }
