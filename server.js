@@ -342,7 +342,8 @@ function appendSpecialEvent(content) {
   for (const msg of timeline) {
     if (msg.position && msg.position > maxPos) maxPos = msg.position;
   }
-  const newEvent = { role: "assistant", content, position: maxPos + 0.5 };
+  const newEvent = { role: "assistant", content, position: maxPos + 0.5, source: "bark" };
+
   timeline.push(newEvent);
   saveTimeline(timeline);
   console.log(`\n已记录特殊事件 (position ${newEvent.position}): ${content}\n`);
@@ -514,9 +515,11 @@ saveTimeline(finalTimeline);
 
     // Kelivo 发图时 content 常是数组。默认转为文本占位，避免非视觉模型/中转站报错。
     // 如上游支持 OpenAI 兼容视觉格式，可设置 MULTIMODAL_MODE=passthrough 原样转发。
-    const llmMessages = kelivoMessages
-      .map(prepareMessageForLLM)
-      .filter(Boolean);
+const llmMessages = kelivoMessages
+  .filter(m => m.source !== "bark")
+  .map(prepareMessageForLLM)
+  .filter(Boolean);
+
 
     const oldEvents = stripPosition(
       oldTimeline.filter(isSpecialEvent).sort((a, b) => {
