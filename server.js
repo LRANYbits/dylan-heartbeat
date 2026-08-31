@@ -519,7 +519,6 @@ const llmMessages = kelivoMessages
   .filter(m => m.source !== "bark")
   .map(prepareMessageForLLM)
   .filter(Boolean);
-  .slice(-30);
 
 
     const oldEvents = stripPosition(
