@@ -519,10 +519,12 @@ const llmMessages = kelivoMessages
   .filter(m => m.source !== "bark")
   .map(prepareMessageForLLM)
   .filter(Boolean);
+  .slice(-30);
 
 
     const oldEvents = stripPosition(
-      oldTimeline.filter(isSpecialEvent).sort((a, b) => {
+      oldTimeline.filter(e => isSpecialEvent(e) && !e.injectedIntoLLM).sort((a, b) => {
+
         const timeA = extractTimestampWithMemory(a, tsDB);
         const timeB = extractTimestampWithMemory(b, tsDB);
         if (timeA && timeB) return timeA - timeB;
@@ -547,6 +549,12 @@ const llmMessages = kelivoMessages
       }
       if (!inserted) llmMessages.push(event);
     }
+if (oldEvents.length > 0) {
+    const tl = loadTimeline();
+    tl.forEach(e => { if (isSpecialEvent(e)) e.injectedIntoLLM = true; });
+    saveTimeline(tl);
+}
+while (llmMessages.length > 30) { llmMessages.shift(); }
 
 
 
