@@ -478,6 +478,11 @@ app.get("/v1/models", async (req, reply) => {
 app.post("/v1/chat/completions", async (req, reply) => {
   try {
     const body = req.body;
+if (body.tools && Array.isArray(body.tools)) {
+    body.tools = body.tools.filter(t => t.function?.name !== "create_memory");
+    if (body.tools.length === 0) delete body.tools;
+}
+
     console.log("\n============================");
     console.log("收到 Kelivo 完整请求 Body:");
     console.log(JSON.stringify(sanitizeForLog(body), null, 2));
@@ -516,9 +521,11 @@ saveTimeline(finalTimeline);
     // Kelivo 发图时 content 常是数组。默认转为文本占位，避免非视觉模型/中转站报错。
     // 如上游支持 OpenAI 兼容视觉格式，可设置 MULTIMODAL_MODE=passthrough 原样转发。
 const llmMessages = kelivoMessages
-  .filter(m => m.source !== "bark")
-  .map(prepareMessageForLLM)
-  .filter(Boolean);
+    .filter(m => m.source !== "bark")
+    .filter(m => m.role !== "tool")
+    .map(prepareMessageForLLM)
+    .filter(Boolean);
+
 
 
     const oldEvents = stripPosition(
