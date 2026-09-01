@@ -517,7 +517,6 @@ saveTimeline(finalTimeline);
     // 如上游支持 OpenAI 兼容视觉格式，可设置 MULTIMODAL_MODE=passthrough 原样转发。
 const llmMessages = kelivoMessages
     .filter(m => m.source !== "bark")
-    .filter(m => m.role !== "tool")
     .map(prepareMessageForLLM)
     .filter(Boolean);
 
@@ -555,9 +554,7 @@ if (oldEvents.length > 0) {
     tl.forEach(e => { if (isSpecialEvent(e)) e.injectedIntoLLM = true; });
     saveTimeline(tl);
 }
-while (llmMessages.length > 30) { llmMessages.shift(); }
-
-
+while (llmMessages.length > 15) { llmMessages.shift(); }
 
     // 调试打印
     console.log("\n===== 转发给 LLM 的 Messages（前 10 条）=====\n");
