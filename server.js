@@ -478,11 +478,6 @@ app.get("/v1/models", async (req, reply) => {
 app.post("/v1/chat/completions", async (req, reply) => {
   try {
     const body = req.body;
-if (body.tools && Array.isArray(body.tools)) {
-    body.tools = body.tools.filter(t => t.function?.name !== "create_memory");
-    if (body.tools.length === 0) delete body.tools;
-}
-
     console.log("\n============================");
     console.log("收到 Kelivo 完整请求 Body:");
     console.log(JSON.stringify(sanitizeForLog(body), null, 2));
