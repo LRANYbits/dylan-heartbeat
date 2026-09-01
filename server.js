@@ -516,7 +516,8 @@ saveTimeline(finalTimeline);
     // Kelivo 发图时 content 常是数组。默认转为文本占位，避免非视觉模型/中转站报错。
     // 如上游支持 OpenAI 兼容视觉格式，可设置 MULTIMODAL_MODE=passthrough 原样转发。
 const llmMessages = kelivoMessages
-    .filter(m => m.source !== "bark")
+    .filter(m => m.source !== "bark") 
+    .filter(m => m.role !== "tool")
     .map(prepareMessageForLLM)
     .filter(Boolean);
 
